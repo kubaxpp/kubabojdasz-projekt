@@ -1,0 +1,268 @@
+PU-01 – Wyświetl listę gier
+
+Aktor: Czytelnik
+
+Cel: Wyświetlenie wszystkich gier znajdujących się w bibliotece.
+
+Warunki początkowe:
+
+- System jest uruchomiony.
+- W bazie znajdują się gry.
+
+Przebieg:
+
+Czytelnik wybiera opcję „Wyświetl listę gier”.
+System pobiera listę gier z bazy danych.
+System wyświetla listę dostępnych gier.
+Przy każdej grze wyświetlane są podstawowe informacje, np.:
+- tytuł,
+- producent,
+- rok wydania,
+- platforma,
+- gatunek,
+- ocena,
+- status gry.
+Czytelnik może wybrać konkretną grę, aby zobaczyć jej szczegóły.
+
+Rezultat: Lista gier zostaje wyświetlona.
+
+Przypadki powiązane:
+
+- „Wyszukaj grę po nazwie”
+- „Filtruj gry według gatunku”
+- „Wyświetl informacje o grze”
+
+
+PU-02 – Wyszukaj grę po nazwie
+
+Aktor: Czytelnik
+
+Cel: Odnalezienie konkretnej gry na podstawie jej nazwy.
+
+Warunki początkowe:
+
+- W bibliotece znajdują się gry.
+- Czytelnik znajduje się na ekranie listy gier.
+
+Przebieg:
+
+1.Czytelnik wybiera pole wyszukiwania.
+2.Wpisuje nazwę lub fragment nazwy gry.
+3.System porównuje wpisaną nazwę z nazwami gier w bazie.
+4.System wyświetla gry pasujące do wyszukiwania.
+5.Czytelnik może wybrać konkretną grę i wyświetlić jej informacje.
+
+Sytuacja alternatywna:
+
+- Jeżeli żadna gra nie pasuje do wpisanej nazwy, system wyświetla komunikat „Nie znaleziono gry”.
+
+Rezultat: Czytelnik otrzymuje listę gier odpowiadających wyszukiwanej nazwie.
+
+
+PU-03 – Filtruj gry według gatunku
+
+Aktor: Czytelnik
+
+Cel: Wyświetlenie tylko gier należących do wybranego gatunku.
+
+Dostępne gatunki:
+
+- FPS,
+- RPG,
+- wyścigowe,
+- sportowe.
+
+Przebieg:
+
+1.Czytelnik otwiera listę gier.
+2.Wybiera opcję „Filtruj gry według gatunku”.
+3.System wyświetla dostępne gatunki.
+4.Czytelnik wybiera np. RPG.
+5.System wyszukuje gry przypisane do kategorii RPG.
+6.System wyświetla przefiltrowaną listę.
+
+Sytuacja alternatywna:
+
+- Jeżeli w wybranej kategorii nie ma żadnej gry, system wyświetla odpowiedni komunikat.
+
+Rezultat: Na ekranie pozostają gry należące do wybranego gatunku.
+
+
+PU-04 – Wyświetl informacje o grze
+
+Aktor: Czytelnik
+
+Cel: Wyświetlenie szczegółowych informacji o wybranej grze.
+
+Przebieg:
+
+1.Czytelnik wybiera grę z listy.
+2.System pobiera informacje o grze.
+3.System wyświetla:
+	- tytuł,
+	- producenta,
+	- rok wydania,
+	- platformę,
+	- gatunek,
+	- ocenę,
+	- status gry.
+4.Czytelnik może następnie ocenić grę lub zmienić jej status.
+
+Rezultat: Szczegółowe informacje o grze zostają wyświetlone.
+
+
+PU-05 – Dodaj ocenę
+
+Aktor: Czytelnik
+
+Cel: Dodanie oceny do wybranej gry.
+
+Przebieg:
+
+1.Czytelnik otwiera informacje o grze.
+2.Wybiera opcję „Dodaj ocenę”.
+3.System wyświetla skalę ocen, np. 1–10.
+4.Czytelnik wybiera ocenę.
+5.System zapisuje ocenę.
+6.System aktualizuje średnią ocen gry.
+
+Sytuacja alternatywna:
+
+- Jeżeli użytkownik posiada już ocenę, system może pozwolić na jej zmianę.
+
+Rezultat: Ocena zostaje zapisana, a średnia ocen zostaje zaktualizowana.
+
+
+PU-06 – Zmień status gry
+
+Aktor: Czytelnik
+
+Cel: Określenie aktualnego statusu gry.
+
+Dostępne statusy:
+
+- Ukończona
+- W trakcie
+- Do zagrania
+
+Przebieg:
+
+1.Czytelnik wybiera grę.
+2.Wybiera opcję „Zmień status gry”.
+3.System wyświetla dostępne statusy.
+4.Czytelnik wybiera jeden z nich.
+5.System zapisuje nowy status.
+6.Status jest widoczny przy grze.
+
+Przykład:
+
+	Cyberpunk 2077 → W trakcie
+
+Rezultat: Status gry zostaje zmieniony.
+
+
+PU-07 – Wyświetl statystyki
+
+Aktor: Czytelnik
+
+Cel: Wyświetlenie podsumowania dotyczącego biblioteki gier.
+
+Przebieg:
+
+1.Czytelnik wybiera „Wyświetl statystyki”.
+2.System pobiera dane z biblioteki.
+3.System oblicza statystyki.
+4.System wyświetla m.in.:
+	- liczbę wszystkich gier,
+	- liczbę ukończonych gier,
+	- liczbę gier w trakcie,
+	- liczbę gier do zagrania,
+	- średnią ocen gier.
+5.Czytelnik może zobaczyć podsumowanie swojej biblioteki.
+
+Rezultat: Statystyki biblioteki zostają wyświetlone.
+
+
+PU-08 – Dodaj nową grę
+
+Aktor: Administrator
+
+Cel: Dodanie nowej gry do biblioteki.
+
+Przebieg:
+
+1.Administrator wybiera „Dodaj nową grę”.
+2.System wyświetla formularz.
+3.Administrator wpisuje:
+	- tytuł,
+	- producenta,
+	- rok wydania,
+	- platformę,
+	- gatunek.
+4.Administrator zatwierdza formularz.
+5.System sprawdza poprawność danych.
+6.System zapisuje nową grę w bazie.
+7.Gra pojawia się na liście gier.
+
+Sytuacja alternatywna:
+
+- Jeżeli wymagane pole jest puste, system informuje administratora o konieczności jego uzupełnienia.
+- Jeżeli gra o takim tytule już istnieje, system może wyświetlić ostrzeżenie.
+
+Rezultat: Nowa gra zostaje dodana do biblioteki.
+
+
+PU-09 – Edytuj grę
+
+Aktor: Administrator
+
+Cel: Zmiana informacji dotyczących istniejącej gry.
+
+Przebieg:
+
+1.Administrator wybiera grę z listy.
+2.Wybiera „Edytuj grę”.
+3.System wyświetla formularz z aktualnymi danymi.
+4.Administrator zmienia wybrane informacje.
+5.Administrator zatwierdza zmiany.
+6.System sprawdza poprawność danych.
+7.System zapisuje zmienione informacje.
+
+Przykład:
+
+Producent:
+
+Ubisoft → Ubisoft Entertainment
+
+Rok wydania:
+
+2018 → 2019
+
+Rezultat: Dane gry zostają zaktualizowane.
+
+
+PU-10 – Usuń grę
+
+Aktor: Administrator
+
+Cel: Usunięcie gry z biblioteki.
+
+Przebieg:
+
+1.Administrator wybiera grę.
+2.Wybiera opcję „Usuń grę”.
+
+3.System wyświetla komunikat potwierdzający:
+
+„Czy na pewno chcesz usunąć tę grę?”
+
+4.Administrator potwierdza.
+5.System usuwa grę z bazy danych.
+6.Gra znika z listy.
+
+Sytuacja alternatywna:
+
+Administrator wybiera „Anuluj”.
+Gra pozostaje w bibliotece.
+
+Rezultat: Wybrana gra zostaje usunięta.
