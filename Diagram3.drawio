@@ -1,0 +1,46 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Strona-1" id="zDIM68AduErO7GUbowwS">
+    <mxGraphModel dx="1369" dy="790" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="wIf6YI8qhnh7_Xr42PKf-1" parent="1" style="whiteSpace=wrap;html=1;aspect=fixed;" value="" vertex="1">
+          <mxGeometry height="240" width="240" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="wIf6YI8qhnh7_Xr42PKf-2" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&amp;nbsp;&lt;/span&gt;&amp;nbsp; &amp;nbsp;GRA&lt;br&gt;&lt;/h1&gt;&lt;p&gt;- idGry: int&lt;br&gt;- tytul: String&lt;br&gt;- producent: String&lt;br&gt;- rokWydania: int&lt;br&gt;-platforma: String&lt;br&gt;- gatunek: String&lt;br&gt;- ocena: double&lt;/p&gt;&lt;p&gt;+ wyszukaj (kryteria)&lt;br&gt;+ edytujDane()&lt;/p&gt;" vertex="1">
+          <mxGeometry height="220" width="220" x="50" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="wIf6YI8qhnh7_Xr42PKf-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="200" width="240" x="560" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="wIf6YI8qhnh7_Xr42PKf-5" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;KATEGORIA&lt;/h1&gt;&lt;p&gt;- idKategorii: int&lt;br&gt;- nazwa: String&lt;/p&gt;&lt;p&gt;+ dodajKategorie()&lt;br&gt;+ przypiszGre()&lt;/p&gt;" vertex="1">
+          <mxGeometry height="180" width="220" x="570" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="wIf6YI8qhnh7_Xr42PKf-6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="160" width="240" x="40" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="wIf6YI8qhnh7_Xr42PKf-7" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp;STATUS GRY&lt;/h1&gt;&lt;p&gt;- idStatusu: int&lt;br&gt;- status: String&lt;/p&gt;&lt;p&gt;+ zmienStatus(nowyStatus)&lt;/p&gt;" vertex="1">
+          <mxGeometry height="140" width="220" x="50" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="wIf6YI8qhnh7_Xr42PKf-8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="160" width="240" x="560" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="wIf6YI8qhnh7_Xr42PKf-9" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;&amp;nbsp; OCENA&lt;/h1&gt;&lt;p&gt;- idOceny: int&lt;br&gt;- wartosc: double&lt;/p&gt;&lt;p&gt;+ dodajOcene(wartosc)&lt;br&gt;+ obliczSrednia(): double&lt;/p&gt;" vertex="1">
+          <mxGeometry height="140" width="220" x="570" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="wIf6YI8qhnh7_Xr42PKf-10" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="240" width="240" x="40" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="wIf6YI8qhnh7_Xr42PKf-11" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="240" width="240" x="560" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="wIf6YI8qhnh7_Xr42PKf-12" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&amp;nbsp; &amp;nbsp; UZYTKOWNIK&lt;/h1&gt;&lt;p&gt;- idUzytkownika: int&lt;br&gt;- nazwa: String&lt;/p&gt;&lt;p&gt;+ wyswietlListeGier()&lt;br&gt;+ wyszukajGre()&lt;br&gt;+filtrujWedlugGatunku()&lt;br&gt;+wyswietlStatystyki()&lt;/p&gt;" vertex="1">
+          <mxGeometry height="220" width="220" x="50" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="wIf6YI8qhnh7_Xr42PKf-13" parent="1" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;Heading&lt;/h1&gt;&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.&lt;/p&gt;" vertex="1">
+          <mxGeometry height="220" width="220" x="570" y="530" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
