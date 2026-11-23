@@ -14,7 +14,7 @@ try {
             PDO::ATTR_EMULATE_PREPARES => false,
         ]
     );
-    if ($pdo->query("SHOW TABLES LIKE 'gra'")->rowCount() === 0) { header('Location: ' . base() . 'install.php'); exit; }
+    if ($pdo->query("SHOW TABLES LIKE 'uzytkownik'")->rowCount() === 0) { header('Location: ' . base() . 'install.php'); exit; }
 } catch (PDOException $e) {
     if ($e->getCode() == 1049) { header('Location: ' . base() . 'install.php'); exit; } // brak bazy
     http_response_code(500);
@@ -37,9 +37,13 @@ function csrf_check(): void {
     }
 }
 
-function is_admin(): bool { return !empty($_SESSION['admin']); }
+function is_logged(): bool { return !empty($_SESSION['uid']); }
+function is_admin(): bool { return is_logged() && ($_SESSION['rola'] ?? '') === 'admin'; }
+function require_login(): void {
+    if (!is_logged()) { flash('Zaloguj się, aby to zrobić.', 'warn'); header('Location: ' . base() . 'login.php'); exit; }
+}
 function require_admin(): void {
-    if (!is_admin()) { header('Location: ' . base() . 'admin/login.php'); exit; }
+    if (!is_admin()) { flash('Ta strona jest tylko dla administratora.', 'warn'); header('Location: ' . base() . 'login.php'); exit; }
 }
 
 // ścieżka bazowa aplikacji (np. /biblioteka-gier/)
@@ -51,18 +55,24 @@ function base(): string {
 
 function flash(string $msg, string $type = 'ok'): void { $_SESSION['flash'] = [$msg, $type]; }
 
-// identyfikator gościa do ocen (jedna ocena na grę)
-function visitor_id(): string {
-    if (empty($_COOKIE['gid'])) {
-        $id = bin2hex(random_bytes(16));
-        setcookie('gid', $id, time() + 60 * 60 * 24 * 365, '/');
-        $_COOKIE['gid'] = $id;
-    }
-    return preg_replace('/[^a-f0-9]/', '', (string)$_COOKIE['gid']);
+
+// odmiana: 1 ocena, 2-4 oceny, 5+ ocen
+function ocen(int $n): string {
+    $m10 = $n % 10; $m100 = $n % 100;
+    if ($n === 1) return '1 ocena';
+    return $n . ($m10 >= 2 && $m10 <= 4 && ($m100 < 12 || $m100 > 14) ? ' oceny' : ' ocen');
 }
 
 function status_class(string $s): string {
     return ['Ukończona' => 'done', 'W trakcie' => 'doing', 'Do zagrania' => 'todo'][$s] ?? 'todo';
+}
+
+// kolor grzbietu pudełka zależny od gatunku
+function genre_color(string $nazwa): string {
+    $map = ['FPS' => '#E5484D', 'RPG' => '#7B5CFA', 'Wyścigowe' => '#F97316', 'Sportowe' => '#0E9F6E'];
+    if (isset($map[$nazwa])) return $map[$nazwa];
+    $extra = ['#2563EB', '#DB2777', '#0891B2', '#CA8A04'];
+    return $extra[crc32($nazwa) % count($extra)];
 }
 
 function gatunki(PDO $pdo): array {

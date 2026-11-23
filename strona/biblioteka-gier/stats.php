@@ -33,7 +33,7 @@ require __DIR__ . '/includes/header.php';
 <ul class="bars">
 <?php $max = max(1, ...array_column($gat, 'ile')); foreach ($gat as $g): ?>
   <li><span><?= e($g['nazwa']) ?></span>
-      <i style="width:<?= round($g['ile'] / $max * 100) ?>%"></i><em><?= (int)$g['ile'] ?></em></li>
+      <i style="width:<?= round($g['ile'] / $max * 100) ?>%;background:<?= genre_color($g['nazwa']) ?>"></i><em><?= (int)$g['ile'] ?></em></li>
 <?php endforeach; ?>
 </ul>
 <?php require __DIR__ . '/includes/footer.php'; ?>
