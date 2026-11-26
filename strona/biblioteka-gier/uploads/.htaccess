@@ -1,0 +1,5 @@
+# w tym folderze nie wolno uruchamiać skryptów
+<FilesMatch "\.(php|phtml|phar|php5|php7)$">
+  Require all denied
+</FilesMatch>
+Options -Indexes

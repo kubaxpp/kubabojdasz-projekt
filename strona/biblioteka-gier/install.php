@@ -1,5 +1,5 @@
 <?php
-// Instalator: nowa baza (schema.sql) albo aktualizacja istniejącej (aktualizacja.sql).
+// Instalator: nowa baza albo kolejne aktualizacje istniejącej (gry i konta zostają).
 require_once __DIR__ . '/config.php';
 header('Content-Type: text/html; charset=utf-8');
 echo '<!DOCTYPE html><meta charset="utf-8"><body style="font:16px system-ui;max-width:700px;margin:40px auto">';
@@ -10,29 +10,39 @@ try {
 } catch (PDOException $e) {
     exit('<p style="color:#c00">Nie można połączyć z MySQL: ' . htmlspecialchars($e->getMessage()) . '</p><p>Czy MySQL jest uruchomiony w XAMPP? Sprawdź dane w config.php.</p>');
 }
-$istnieje = fn(string $t) => $pdo->query("SHOW TABLES FROM `" . DB_NAME . "` LIKE '$t'")->rowCount() > 0;
 $baza = $pdo->query("SHOW DATABASES LIKE '" . DB_NAME . "'")->rowCount() > 0;
-$aktualizacja = $baza && $istnieje('gra');                   // gry już są – nie kasujemy ich
-$plik = $aktualizacja ? 'aktualizacja.sql' : 'schema.sql';
-echo '<p>Tryb: <b>' . ($aktualizacja ? 'aktualizacja (gry zostają)' : 'nowa instalacja') . '</b></p>';
+$istnieje = fn(string $t) => $baza && $pdo->query("SHOW TABLES FROM `" . DB_NAME . "` LIKE '$t'")->rowCount() > 0;
+$kolumna = fn(string $t, string $k) => $istnieje($t) && $pdo->query("SHOW COLUMNS FROM `" . DB_NAME . "`.`$t` LIKE '$k'")->rowCount() > 0;
 
-$sql = file_get_contents(__DIR__ . '/sql/' . $plik);
-$sql = preg_replace('/^\s*--.*$/m', '', $sql);
+// które pliki trzeba wykonać (po kolei)
+$kroki = [];
+if (!$istnieje('gra'))               $kroki[] = 'schema.sql';
+else {
+    if (!$istnieje('uzytkownik'))    $kroki[] = 'aktualizacja.sql';
+    if (!$kolumna('gra', 'opis'))    $kroki[] = 'aktualizacja2.sql';
+}
+if (!$kroki) { echo '<p>Baza jest już aktualna.</p><p><a href="index.php">Przejdź do biblioteki gier →</a></p>'; exit; }
+echo '<p>Do wykonania: <b>' . implode(', ', $kroki) . '</b></p>';
+
 $ok = true;
-foreach (array_filter(array_map('trim', explode(';', $sql))) as $s) {
-    try {
-        if ($s === "SELECT 'migracja_administratora'") {      // przenieś stare konto admina
-            if ($istnieje('administrator')) {
-                $pdo->exec("INSERT IGNORE INTO uzytkownik (login, haslo_hash, rola) SELECT login, haslo_hash, 'admin' FROM administrator");
-                $pdo->exec('DROP TABLE administrator');
+foreach ($kroki as $plik) {
+    $sql = file_get_contents(__DIR__ . '/sql/' . $plik);
+    $sql = preg_replace('/^\s*--.*$/m', '', $sql);
+    foreach (array_filter(array_map('trim', explode(';', $sql))) as $s) {
+        try {
+            if ($s === "SELECT 'migracja_administratora'") {  // przenieś stare konto admina
+                if ($istnieje('administrator')) {
+                    $pdo->exec("INSERT IGNORE INTO uzytkownik (login, haslo_hash, rola) SELECT login, haslo_hash, 'admin' FROM administrator");
+                    $pdo->exec('DROP TABLE administrator');
+                }
+                continue;
             }
-            continue;
+            $pdo->exec($s);
+        } catch (PDOException $e) {
+            $ok = false;
+            echo '<p style="color:#c00"><b>Błąd w ' . htmlspecialchars($plik) . ':</b> ' . htmlspecialchars($e->getMessage()) . '</p><pre>' . htmlspecialchars(mb_substr($s, 0, 300)) . '</pre>';
+            break 2;
         }
-        $pdo->exec($s);
-    } catch (PDOException $e) {
-        $ok = false;
-        echo '<p style="color:#c00"><b>Błąd:</b> ' . htmlspecialchars($e->getMessage()) . '</p><pre>' . htmlspecialchars(mb_substr($s, 0, 300)) . '</pre>';
-        break;
     }
 }
 if ($ok) echo '<p style="color:#0a0"><b>Gotowe!</b></p><p><a href="index.php">Przejdź do biblioteki gier →</a></p>';

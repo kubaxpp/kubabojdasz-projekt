@@ -14,7 +14,8 @@ try {
             PDO::ATTR_EMULATE_PREPARES => false,
         ]
     );
-    if ($pdo->query("SHOW TABLES LIKE 'uzytkownik'")->rowCount() === 0) { header('Location: ' . base() . 'install.php'); exit; }
+    if ($pdo->query("SHOW TABLES LIKE 'uzytkownik'")->rowCount() === 0
+        || $pdo->query("SHOW COLUMNS FROM gra LIKE 'opis'")->rowCount() === 0) { header('Location: ' . base() . 'install.php'); exit; }
 } catch (PDOException $e) {
     if ($e->getCode() == 1049) { header('Location: ' . base() . 'install.php'); exit; } // brak bazy
     http_response_code(500);
@@ -77,4 +78,38 @@ function genre_color(string $nazwa): string {
 
 function gatunki(PDO $pdo): array {
     return $pdo->query('SELECT * FROM gatunek ORDER BY nazwa')->fetchAll();
+}
+
+// ---- okładki gier ----
+const UPLOAD_DIR = __DIR__ . '/../uploads/';
+
+// Zapisuje wgraną okładkę. Zwraca nazwę pliku, a gdy nic nie wgrano albo jest błąd – null (błąd w $err).
+function store_cover(array $file, string &$err): ?string {
+    $code = $file['error'] ?? UPLOAD_ERR_NO_FILE;
+    if ($code === UPLOAD_ERR_NO_FILE) return null;
+    if ($code !== UPLOAD_ERR_OK) { $err = 'Nie udało się wgrać okładki.'; return null; }
+    if ($file['size'] > 2 * 1024 * 1024) { $err = 'Okładka może mieć maksymalnie 2 MB.'; return null; }
+    $info = @getimagesize($file['tmp_name']);
+    $ext = [IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_WEBP => 'webp'][$info[2] ?? 0] ?? null;
+    if (!$ext) { $err = 'Okładka musi być obrazem JPG, PNG lub WebP.'; return null; }
+    if (!is_dir(UPLOAD_DIR)) @mkdir(UPLOAD_DIR, 0775, true);
+    $name = bin2hex(random_bytes(8)) . '.' . $ext;
+    if (!move_uploaded_file($file['tmp_name'], UPLOAD_DIR . $name)) { $err = 'Nie można zapisać okładki w folderze uploads.'; return null; }
+    return $name;
+}
+
+function remove_cover(?string $f): void {
+    if ($f && preg_match('/^[a-f0-9]{16}\.(jpg|png|webp)$/', $f)) @unlink(UPLOAD_DIR . $f);
+}
+
+// okładka albo kolorowy placeholder z pierwszą literą tytułu
+function cover(array $g): string {
+    if (!empty($g['okladka'])) {
+        return '<div class="cover"><img src="' . e(base() . 'uploads/' . rawurlencode($g['okladka'])) . '" alt="Okładka gry ' . e($g['tytul']) . '" loading="lazy"></div>';
+    }
+    return '<div class="cover ph" aria-hidden="true"><span>' . e(mb_strtoupper(mb_substr($g['tytul'], 0, 1))) . '</span></div>';
+}
+
+function przelicz_ocene(PDO $pdo, int $id): void {
+    $pdo->prepare('UPDATE gra SET ocena = (SELECT ROUND(AVG(ocena),1) FROM oceny WHERE id_gry = ?) WHERE id_gry = ?')->execute([$id, $id]);
 }

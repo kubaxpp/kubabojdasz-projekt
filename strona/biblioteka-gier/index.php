@@ -7,6 +7,18 @@ $gat    = (int)($_GET['gatunek'] ?? 0);
 $status = $_GET['status'] ?? '';
 if (!in_array($status, STATUSY, true)) $status = '';
 
+$sorty = [
+  'tytul'   => ['Tytuł A–Z', 'g.tytul'],
+  'tytul_d' => ['Tytuł Z–A', 'g.tytul DESC'],
+  'ocena'   => ['Najwyżej oceniane', 'g.ocena IS NULL, g.ocena DESC, g.tytul'],
+  'ocena_a' => ['Najniżej oceniane', 'g.ocena IS NULL, g.ocena ASC, g.tytul'],
+  'rok'     => ['Najnowsze (rok wydania)', 'g.rok_wydania DESC, g.tytul'],
+  'rok_a'   => ['Najstarsze (rok wydania)', 'g.rok_wydania ASC, g.tytul'],
+  'dodane'  => ['Ostatnio dodane', 'g.id_gry DESC'],
+];
+$sort = $_GET['sort'] ?? 'tytul';
+if (!isset($sorty[$sort])) $sort = 'tytul';
+
 $sql = 'SELECT g.*, ga.nazwa AS gatunek
         FROM gra g
         JOIN gatunek ga ON ga.id_gatunek = g.id_gatunek
@@ -16,7 +28,7 @@ $p = [':bib' => ID_BIBLIOTEKI];
 if ($q !== '')      { $sql .= ' AND g.tytul LIKE :q'; $p[':q'] = '%' . addcslashes($q, '%_\\') . '%'; }
 if ($gat > 0)       { $sql .= ' AND g.id_gatunek = :gat'; $p[':gat'] = $gat; }
 if ($status !== '') { $sql .= ' AND g.status = :st'; $p[':st'] = $status; }
-$sql .= ' ORDER BY g.tytul';
+$sql .= ' ORDER BY ' . $sorty[$sort][1];   // tylko wartość z białej listy
 
 $st = $pdo->prepare($sql);
 $st->execute($p);
@@ -69,8 +81,13 @@ require __DIR__ . '/includes/header.php';
       <option <?= $status === $s ? 'selected' : '' ?>><?= e($s) ?></option>
     <?php endforeach; ?>
   </select>
-  <button class="btn">Filtruj</button>
-  <?php if ($q !== '' || $gat || $status !== ''): ?><a class="btn ghost" href="index.php">Wyczyść</a><?php endif; ?>
+  <select name="sort" aria-label="Sortowanie">
+    <?php foreach ($sorty as $k => [$nazwa]): ?>
+      <option value="<?= $k ?>" <?= $sort === $k ? 'selected' : '' ?>><?= e($nazwa) ?></option>
+    <?php endforeach; ?>
+  </select>
+  <button class="btn">Pokaż</button>
+  <?php if ($q !== '' || $gat || $status !== '' || $sort !== 'tytul'): ?><a class="btn ghost" href="index.php">Wyczyść</a><?php endif; ?>
 </form>
 
 <?php if (!$gry): ?>
@@ -82,6 +99,7 @@ require __DIR__ . '/includes/header.php';
     <article class="case" style="--g:<?= genre_color($g['gatunek']) ?>">
       <div class="spine"><?= e($g['gatunek']) ?></div>
       <div class="body">
+        <?= cover($g) ?>
         <h2><a href="gra.php?id=<?= $g['id_gry'] ?>"><?= e($g['tytul']) ?></a></h2>
         <p class="meta"><?= e($g['producent']) ?>, <?= (int)$g['rok_wydania'] ?></p>
         <p class="meta"><?= e($g['platforma']) ?></p>

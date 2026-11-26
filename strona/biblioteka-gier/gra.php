@@ -19,15 +19,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($akcja === 'ocena') {                                   // PU-05
         $o = (int)($_POST['ocena'] ?? 0);
+        $kom = trim($_POST['komentarz'] ?? '');
+        $kom = $kom !== '' ? mb_substr($kom, 0, 500) : null;
         if ($o >= 1 && $o <= 10) {
             $pdo->beginTransaction();
-            $pdo->prepare('INSERT INTO oceny (id_gry, id_uzytkownik, ocena) VALUES (?,?,?)
-                           ON DUPLICATE KEY UPDATE ocena = VALUES(ocena)')
-                ->execute([$id, $_SESSION['uid'], $o]);
-            $pdo->prepare('UPDATE gra SET ocena = (SELECT ROUND(AVG(ocena),1) FROM oceny WHERE id_gry = ?) WHERE id_gry = ?')
-                ->execute([$id, $id]);
+            $pdo->prepare('INSERT INTO oceny (id_gry, id_uzytkownik, ocena, komentarz) VALUES (?,?,?,?)
+                           ON DUPLICATE KEY UPDATE ocena = VALUES(ocena), komentarz = VALUES(komentarz)')
+                ->execute([$id, $_SESSION['uid'], $o, $kom]);
+            przelicz_ocene($pdo, $id);
             $pdo->commit();
             flash('Ocena zapisana, średnia zaktualizowana.');
+        }
+    } elseif ($akcja === 'usun_ocene') {
+        $uid = (int)($_POST['uid'] ?? 0);
+        if (is_admin() || $uid === (int)$_SESSION['uid']) {     // admin albo autor opinii
+            $pdo->prepare('DELETE FROM oceny WHERE id_gry = ? AND id_uzytkownik = ?')->execute([$id, $uid]);
+            przelicz_ocene($pdo, $id);
+            flash('Opinia została usunięta.');
         }
     } elseif ($akcja === 'status') {                            // PU-06
         $s = $_POST['status'] ?? '';
@@ -40,13 +48,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-$st = $pdo->prepare('SELECT u.login, o.ocena FROM oceny o JOIN uzytkownik u ON u.id = o.id_uzytkownik
+$st = $pdo->prepare('SELECT u.id AS uid, u.login, o.ocena, o.komentarz FROM oceny o JOIN uzytkownik u ON u.id = o.id_uzytkownik
                      WHERE o.id_gry = ? ORDER BY o.ocena DESC, u.login');
 $st->execute([$id]);
 $oceny = $st->fetchAll();
 $ile = count($oceny);
 $moja = false;
-foreach ($oceny as $o) if (is_logged() && $o['login'] === $_SESSION['login']) $moja = $o['ocena'];
+$mojKom = '';
+foreach ($oceny as $o) if (is_logged() && $o['login'] === $_SESSION['login']) { $moja = $o['ocena']; $mojKom = (string)$o['komentarz']; }
 
 $title = $gra['tytul'];
 require __DIR__ . '/includes/header.php';
@@ -55,6 +64,7 @@ require __DIR__ . '/includes/header.php';
 <section class="detail case" style="--g:<?= genre_color($gra['gatunek']) ?>">
   <div class="spine"><?= e($gra['gatunek']) ?></div>
   <div class="body">
+  <?= cover($gra) ?>
   <span class="badge <?= status_class($gra['status']) ?>"><?= e($gra['status']) ?></span>
   <h1><?= e($gra['tytul']) ?></h1>
   <dl>
@@ -66,10 +76,27 @@ require __DIR__ . '/includes/header.php';
     <dd><?= $gra['ocena'] !== null ? '★ ' . number_format((float)$gra['ocena'], 1, ',', '') . ' / 10 (' . ocen($ile) . ')' : 'Brak ocen' ?></dd>
   </dl>
 
+  <?php if (!empty($gra['opis'])): ?><p class="opis"><?= nl2br(e($gra['opis'])) ?></p><?php endif; ?>
+
   <?php if ($oceny): ?>
-    <ul class="votes" aria-label="Oceny użytkowników">
-      <?php foreach ($oceny as $o): ?><li><span><?= e($o['login']) ?></span><b><?= (int)$o['ocena'] ?></b></li><?php endforeach; ?>
-    </ul>
+    <section class="reviews" aria-label="Opinie użytkowników">
+      <h2>Opinie użytkowników</h2>
+      <ul>
+      <?php foreach ($oceny as $o): ?>
+        <li>
+          <div class="rv-head"><b class="rv-score"><?= (int)$o['ocena'] ?></b><span><?= e($o['login']) ?></span>
+            <?php if (is_admin() || (is_logged() && (int)$o['uid'] === (int)$_SESSION['uid'])): ?>
+              <form method="post" data-confirm="Usunąć tę opinię?">
+                <?= csrf_field() ?><input type="hidden" name="id" value="<?= $id ?>"><input type="hidden" name="akcja" value="usun_ocene"><input type="hidden" name="uid" value="<?= (int)$o['uid'] ?>">
+                <button class="linkbtn">Usuń</button>
+              </form>
+            <?php endif; ?>
+          </div>
+          <?php if ($o['komentarz'] !== null && $o['komentarz'] !== ''): ?><p><?= nl2br(e($o['komentarz'])) ?></p><?php endif; ?>
+        </li>
+      <?php endforeach; ?>
+      </ul>
+    </section>
   <?php endif; ?>
 
   <?php if (is_logged()): ?>
@@ -82,6 +109,8 @@ require __DIR__ . '/includes/header.php';
           <label><input type="radio" name="ocena" value="<?= $i ?>" <?= (int)$moja === $i ? 'checked' : '' ?> required><span><?= $i ?></span></label>
         <?php endfor; ?>
       </div>
+      <label class="kom">Opinia (opcjonalnie)
+        <textarea name="komentarz" rows="3" maxlength="500" placeholder="Co sądzisz o tej grze?"><?= e($mojKom) ?></textarea></label>
       <button class="btn"><?= $moja ? 'Zmień ocenę' : 'Zapisz ocenę' ?></button>
     </form>
 

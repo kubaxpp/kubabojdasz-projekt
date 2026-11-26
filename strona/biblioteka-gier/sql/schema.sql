@@ -26,6 +26,8 @@ CREATE TABLE gra (
   platforma VARCHAR(50) NOT NULL,
   ocena DECIMAL(3,1) NULL DEFAULT NULL,          -- średnia ocen (1-10)
   status ENUM('Do zagrania','W trakcie','Ukończona') NOT NULL DEFAULT 'Do zagrania',
+  opis TEXT NULL,
+  okladka VARCHAR(255) NULL,                      -- nazwa pliku w folderze uploads/
   id_gatunek INT UNSIGNED NOT NULL,
   CONSTRAINT fk_gra_gatunek FOREIGN KEY (id_gatunek)
     REFERENCES gatunek(id_gatunek) ON UPDATE CASCADE ON DELETE RESTRICT,
@@ -60,6 +62,7 @@ CREATE TABLE oceny (
   id_gry INT UNSIGNED NOT NULL,
   id_uzytkownik INT UNSIGNED NOT NULL,
   ocena TINYINT UNSIGNED NOT NULL,
+  komentarz VARCHAR(500) NULL,
   PRIMARY KEY (id_gry, id_uzytkownik),
   CONSTRAINT fk_oceny_gra FOREIGN KEY (id_gry)
     REFERENCES gra(id_gry) ON DELETE CASCADE,
@@ -117,3 +120,13 @@ SELECT g.id_gry, u.id, v.o FROM (
 ) v JOIN gra g ON g.tytul = v.t JOIN uzytkownik u ON u.login = v.l;
 
 UPDATE gra SET ocena = (SELECT ROUND(AVG(o.ocena),1) FROM oceny o WHERE o.id_gry = gra.id_gry);
+
+-- opisy przykładowych gier
+UPDATE gra SET opis = 'Otwarty świat nocnego miasta przyszłości. Jako najemnik V szukasz sposobu na przetrwanie.' WHERE tytul = 'Cyberpunk 2077' AND opis IS NULL;
+UPDATE gra SET opis = 'Wiedźmin Geralt szuka przybranej córki w ogromnym, mrocznym świecie pełnym potworów i trudnych wyborów.' WHERE tytul = 'The Witcher 3: Wild Hunt' AND opis IS NULL;
+UPDATE gra SET opis = 'Drużynowa strzelanka, w której liczą się celność, współpraca i ekonomia rund.' WHERE tytul = 'Counter-Strike 2' AND opis IS NULL;
+UPDATE gra SET opis = 'Szybka strzelanina przeciwko hordom demonów. Stanie w miejscu oznacza przegraną.' WHERE tytul = 'DOOM Eternal' AND opis IS NULL;
+UPDATE gra SET opis = 'Wyścigi w otwartym świecie inspirowanym Meksykiem, z setkami samochodów do odblokowania.' WHERE tytul = 'Forza Horizon 5' AND opis IS NULL;
+UPDATE gra SET opis = 'W dzień legalne wyścigi, w nocy ucieczki przed policją w mieście Palm City.' WHERE tytul = 'Need for Speed: Heat' AND opis IS NULL;
+UPDATE gra SET opis = 'Piłka nożna z licencjonowanymi klubami i ligami oraz trybem kariery.' WHERE tytul = 'FIFA 23' AND opis IS NULL;
+UPDATE gra SET opis = 'Symulacja koszykówki NBA z trybem kariery i budowaniem własnej drużyny.' WHERE tytul = 'NBA 2K24' AND opis IS NULL;
