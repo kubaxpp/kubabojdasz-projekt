@@ -21,7 +21,7 @@
       <a href="<?= base() ?>index.php"<?= $cur==='index.php'||$cur==='gra.php' ? ' aria-current="page"' : '' ?>>Półka</a>
       <a href="<?= base() ?>stats.php"<?= $cur==='stats.php' ? ' aria-current="page"' : '' ?>>Statystyki</a>
       <?php if (is_logged()): ?>
-        <?php if (is_admin()): ?><a href="<?= base() ?>admin/form.php">+ Dodaj grę</a><a href="<?= base() ?>admin/gatunki.php"<?= $cur==='gatunki.php' ? ' aria-current="page"' : '' ?>>Gatunki</a><?php endif; ?>
+        <?php if (is_admin()): ?><a href="<?= base() ?>admin/form.php">+ Dodaj grę</a><a href="<?= base() ?>admin/gatunki.php"<?= $cur==='gatunki.php' ? ' aria-current="page"' : '' ?>>Gatunki</a><a href="<?= base() ?>admin/uzytkownicy.php"<?= $cur==='uzytkownicy.php' ? ' aria-current="page"' : '' ?>>Użytkownicy</a><?php endif; ?>
         <span class="who"><?= e($_SESSION['login']) ?><?= is_admin() ? ' (admin)' : '' ?></span>
         <a href="<?= base() ?>logout.php">Wyloguj</a>
       <?php else: ?>

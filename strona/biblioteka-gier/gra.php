@@ -30,6 +30,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->commit();
             flash('Ocena zapisana, średnia zaktualizowana.');
         }
+    } elseif ($akcja === 'edytuj_ocene' && is_admin()) {         // admin poprawia dowolną opinię
+        $uid = (int)($_POST['uid'] ?? 0);
+        $o = (int)($_POST['ocena'] ?? 0);
+        $kom = trim($_POST['komentarz'] ?? '');
+        $kom = $kom !== '' ? mb_substr($kom, 0, 500) : null;
+        if ($o >= 1 && $o <= 10) {
+            $pdo->prepare('UPDATE oceny SET ocena = ?, komentarz = ? WHERE id_gry = ? AND id_uzytkownik = ?')->execute([$o, $kom, $id, $uid]);
+            przelicz_ocene($pdo, $id);
+            flash('Opinia została zmieniona.');
+        }
     } elseif ($akcja === 'usun_ocene') {
         $uid = (int)($_POST['uid'] ?? 0);
         if (is_admin() || $uid === (int)$_SESSION['uid']) {     // admin albo autor opinii
@@ -93,6 +103,18 @@ require __DIR__ . '/includes/header.php';
             <?php endif; ?>
           </div>
           <?php if ($o['komentarz'] !== null && $o['komentarz'] !== ''): ?><p><?= nl2br(e($o['komentarz'])) ?></p><?php endif; ?>
+          <?php if (is_admin()): ?>
+          <details class="rv-edit">
+            <summary>Edytuj opinię (admin)</summary>
+            <form method="post">
+              <?= csrf_field() ?><input type="hidden" name="id" value="<?= $id ?>"><input type="hidden" name="akcja" value="edytuj_ocene"><input type="hidden" name="uid" value="<?= (int)$o['uid'] ?>">
+              <label>Ocena
+                <select name="ocena"><?php for ($i = 1; $i <= 10; $i++): ?><option <?= (int)$o['ocena'] === $i ? 'selected' : '' ?>><?= $i ?></option><?php endfor; ?></select></label>
+              <label>Komentarz<textarea name="komentarz" rows="3" maxlength="500"><?= e((string)$o['komentarz']) ?></textarea></label>
+              <button class="btn small">Zapisz zmiany</button>
+            </form>
+          </details>
+          <?php endif; ?>
         </li>
       <?php endforeach; ?>
       </ul>

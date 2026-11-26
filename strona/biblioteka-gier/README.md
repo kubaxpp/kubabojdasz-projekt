@@ -22,5 +22,10 @@ Przy remisie wyżej jest gra z większą liczbą ocen.
 - `gra.php` – szczegóły, oceny użytkowników, ocenianie, zmiana statusu
 - `stats.php` – statystyki
 - `login.php`, `register.php`, `logout.php` – konta
-- `admin/` – dodawanie/edycja (`form.php`) i usuwanie (`delete.php`)
+- `admin/` – gry (`form.php`, `delete.php`), gatunki (`gatunki.php`), użytkownicy (`uzytkownicy.php`), kopia danych (`eksport.php`)
 - `sql/schema.sql` – pełny schemat; `sql/aktualizacja.sql` – aktualizacja istniejącej bazy
+
+## Dane i panel administratora
+Wszystkie dane (gry, gatunki, konta, oceny, opinie) są zapisane w bazie MySQL `biblioteka_gier`, a okładki w folderze `uploads/`.
+Admin edytuje: gry i okładki, gatunki, konta (login, rola, nowe hasło, usuwanie) oraz oceny i opinie wszystkich użytkowników.
+Kopia danych: w panelu Użytkownicy przycisk „Pobierz kopię danych (JSON)”. Pełną kopię bazy zrobisz w phpMyAdmin (Eksport) i skopiuj też folder `uploads/`.
